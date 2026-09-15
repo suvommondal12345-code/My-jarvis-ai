@@ -1,24 +1,32 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import time
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.')
 CORS(app)
 
+@app.route('/')
+def home():
+    return send_from_directory('.', 'index.html')
+
 @app.route('/ask', methods=['POST'])
-def ask_jarvis():
-    data = request.get_json() or {}
-    command = data.get("command", "").lower()
+def ask():
+    data = request.get_json()
+    user_command = data.get('command', '').lower()
     
-    if "time" in command or "সময়" in command:
-        current_time = time.strftime("%I:%M %p")
-        reply = f"এখন সময় {current_time}"
-    elif "weather" in command or "আবহাওয়া" in command:
-        reply = "আজকের আবহাওয়া রৌদ্রোজ্জ্বল।"
+    if 'hello' in user_command or 'hi' in user_command:
+        reply = "Hello! How can I help you today?"
+    elif 'time' in user_command:
+        from datetime import datetime
+        reply = f"Current time is {datetime.now().strftime('%H:%M')}"
+    elif 'name' in user_command:
+        reply = "I am Jarvis, your AI Web Assistant!"
     else:
-        reply = "আমি দুঃখিত, আপনার কথাটি বুঝতে পারিনি।"
+        reply = f"I received your command: {user_command}"
         
-    return jsonify({"response": reply})
+    return jsonify({'response': reply})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
+
