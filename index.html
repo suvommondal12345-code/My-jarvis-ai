@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis AI Assistant</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; text-align: center; padding: 50px; }
+        .chat-box { background: #1e1e1e; max-width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #00e5ff; }
+        input { width: 65%; padding: 10px; border-radius: 5px; border: none; }
+        button { padding: 10px 15px; border: none; background: #00e5ff; color: #000; font-weight: bold; border-radius: 5px; cursor: pointer; }
+        #response { margin-top: 20px; font-size: 18px; color: #00e5ff; }
+    </style>
+</head>
+<body>
+    <div class="chat-box">
+        <h2>🤖 Jarvis AI</h2>
+        <input type="text" id="command" placeholder="এখানে লিখুন...">
+        <button onclick="sendCommand()">Pathao</button>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        async function sendCommand() {
+            let cmd = document.getElementById("command").value;
+            let resDiv = document.getElementById("response");
+            resDiv.innerText = "Chinta korche...";
+            
+            try {
+                let res = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmd })
+                });
+                let data = await res.json();
+                resDiv.innerText = "Jarvis: " + data.response;
+            } catch (err) {
+                resDiv.innerText = "Server error!";
+            }
+        }
+    </script>
+</body>
+</html>
